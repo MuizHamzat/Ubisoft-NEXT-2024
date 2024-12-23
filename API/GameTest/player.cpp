@@ -1,13 +1,16 @@
 #include "stdafx.h"
-
+#include "player.h"
 #include "app/app.h"
 
-namespace Player
-{
-	int num = 21;
+Player::Player(float xpos, float ypos) : x(xpos), y(ypos){}
 
-	int GetNum()
-	{
-		return num;
-	}
+std::vector<float> Player::GetPosition() const
+{
+	return std::vector<float>{x, y};
+}
+
+void Player::SetPosition(float xpos, float ypos)
+{
+    x = xpos;
+    y = ypos;
 }

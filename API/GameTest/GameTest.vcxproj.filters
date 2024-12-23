@@ -25,6 +25,7 @@
       <Filter>API\third_party\miniaudio</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -56,6 +57,7 @@
       <Filter>API\third_party\miniaudio</Filter>
     </ClInclude>
     <ClInclude Include="player.h" />
+    <ClInclude Include="utility.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

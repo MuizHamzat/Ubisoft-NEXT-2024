@@ -1,6 +1,15 @@
 #pragma once //Does the exact same thing as #ifndef PLAYER_H and #define PLAYER_H. It's just more consice
 
-namespace Player
+class Player
 {
-	int GetNum();
-}
+public:
+    Player(float xpos, float ypos);
+
+    std::vector<float> GetPosition() const;
+    void SetPosition(float xpos, float ypos);
+
+    float x, y;
+
+private:
+    
+};
