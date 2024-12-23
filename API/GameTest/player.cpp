@@ -5,4 +5,9 @@
 namespace Player
 {
 	int num = 21;
+
+	int GetNum()
+	{
+		return num;
+	}
 }
