@@ -7,6 +7,7 @@ public:
 
     std::vector<float> GetPosition() const;
     void SetPosition(float xpos, float ypos);
+    void Draw();
 
     float x, y;
 

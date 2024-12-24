@@ -9,9 +9,7 @@
 #include <windows.h> 
 #include <math.h>  
 //------------------------------------------------------------------------
-#include "app\app.h"
 #include "player.h"
-#include "utility.h"
 //------------------------------------------------------------------------
 //Definitions
 Player player(400.0f, 400.0f);
@@ -44,18 +42,7 @@ void Update(float deltaTime)
 
 void Render()
 {
-    // Draw a rectangle using lines
-    float width = 50.0f;
-    float height = 50.0f;
-
-    // Top line
-    App::DrawLine(player.x - width / 2, player.y + height / 2, player.x + width / 2, player.y + height / 2);
-    // Bottom line
-    App::DrawLine(player.x - width / 2, player.y - height / 2, player.x + width / 2, player.y - height / 2);
-    // Left line
-    App::DrawLine(player.x - width / 2, player.y - height / 2, player.x - width / 2, player.y + height / 2);
-    // Right line
-    App::DrawLine(player.x + width / 2, player.y - height / 2, player.x + width / 2, player.y + height / 2);
+    player.Draw();
 
     // Print player number
 	std::vector<float> pos = player.GetPosition();
