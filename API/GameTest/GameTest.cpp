@@ -165,7 +165,7 @@ void Init()
 
 	//};
 
-	meshCube.LoadFromObjectFile("donut.obj");
+	meshCube.LoadFromObjectFile("TestData/donut.obj");
 
 	// Projection Matrix
 	// The projection matrix is used to convert 3D coordinates into 2D coordinates. This is done by multiplying the 3D coordinates by the projection matrix.

@@ -212,7 +212,7 @@
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="donut.obj">
+    <None Include="TestData\donut.obj">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

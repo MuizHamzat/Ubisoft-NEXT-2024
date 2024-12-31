@@ -79,6 +79,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="donut.obj" />
+    <None Include="TestData\donut.obj" />
   </ItemGroup>
 </Project>
