@@ -78,4 +78,7 @@
       <Filter>API</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="donut.obj" />
+  </ItemGroup>
 </Project>

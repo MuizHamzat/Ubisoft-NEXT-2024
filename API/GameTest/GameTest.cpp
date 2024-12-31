@@ -16,17 +16,17 @@
 
 struct vec3d // 3D vector
 {
-    float x, y, z;
+	float x, y, z;
 };
 
 struct triangle // 3D triangle
 {
-    vec3d p[3];
+	vec3d p[3];
 };
 
 struct mesh // 3D mesh
 {
-    std::vector<triangle> tris;
+	std::vector<triangle> tris;
 
 	bool LoadFromObjectFile(std::string sFilename)
 	{
@@ -46,7 +46,7 @@ struct mesh // 3D mesh
 
 			//Put the line into a string stream
 			// A stringstream is a stream (like cout or cin) that can be used to read from or write to strings
-			std::stringstream s; 
+			std::stringstream s;
 			s << line;
 
 			char junk;
@@ -82,14 +82,14 @@ struct mesh // 3D mesh
 			}
 
 		}
-		
+
 		return true;
 	}
 };
 
 struct mat4x4 // 4x4 matrix
 {
-    float m[4][4] = { 0 }; // Initialize all elements to 0
+	float m[4][4] = { 0 }; // Initialize all elements to 0
 };
 
 float fTheta = 0.0f;
@@ -101,24 +101,24 @@ vec3d vCamera; // Camera position
 
 void MultiplyMatrixVector(vec3d& i, vec3d& o, mat4x4& m)
 {
-    // Multiply vector i by matrix m and store the result in vector o
-    o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
-    o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
-    o.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + m.m[3][2];
-    // Divide by w
-    float w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3];
-    if (w != 0.0f)
-    {
-        o.x /= w; o.y /= w; o.z /= w;
-    }
+	// Multiply vector i by matrix m and store the result in vector o
+	o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
+	o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
+	o.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + m.m[3][2];
+	// Divide by w
+	float w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3];
+	if (w != 0.0f)
+	{
+		o.x /= w; o.y /= w; o.z /= w;
+	}
 }
 
 
 //------------------------------------------------------------------------
 void Init()
 {
-    // Initial position of the object
-    //player.SetPosition(400.0f, 400.0f);
+	// Initial position of the object
+	//player.SetPosition(400.0f, 400.0f);
 
 	//Hard-code in the rotation matrices
 
@@ -187,22 +187,22 @@ void Init()
 
 void Update(float deltaTime)
 {
-    /*if (App::GetController().GetLeftThumbStickX() > 0.5f)
-    {
-        player.x += 1;
-    }
-    if (App::GetController().GetLeftThumbStickX() < -0.5f)
-    {
-        player.x -= 1;
-    }
-    if (App::GetController().GetLeftThumbStickY() > 0.5f)
-    {
-        player.y += 1;
-    }
-    if (App::GetController().GetLeftThumbStickY() < -0.5f)
-    {
-        player.y -= 1;
-    }*/
+	/*if (App::GetController().GetLeftThumbStickX() > 0.5f)
+	{
+		player.x += 1;
+	}
+	if (App::GetController().GetLeftThumbStickX() < -0.5f)
+	{
+		player.x -= 1;
+	}
+	if (App::GetController().GetLeftThumbStickY() > 0.5f)
+	{
+		player.y += 1;
+	}
+	if (App::GetController().GetLeftThumbStickY() < -0.5f)
+	{
+		player.y -= 1;
+	}*/
 
 	fTheta += 0.001f * deltaTime; // Rotate the cube by 1 degree per frame
 
@@ -226,12 +226,12 @@ void Update(float deltaTime)
 
 void Render()
 {
- //   player.Draw();
+	//   player.Draw();
 
- //   // Print player number
-	//std::vector<float> pos = player.GetPosition();
-	//std::string posStr = Utility::VectorToString(pos);
- //   App::Print(400.0f, 500.0f, posStr.c_str());
+	//   // Print player number
+	   //std::vector<float> pos = player.GetPosition();
+	   //std::string posStr = Utility::VectorToString(pos);
+	//   App::Print(400.0f, 500.0f, posStr.c_str());
 
 	std::vector<triangle> vecTrianglesToRaster; // Vector of triangles to rasterize
 
@@ -278,8 +278,8 @@ void Render()
 
 		//if (normal.z < 0) // If the normal line of the triangle's z-component is less than 0, the triangle is facing the camera, so we should draw it. Otherwise, it's facing away from the camera and we shouldn't draw it.
 		// If the dot product of the normal and the vector from the camera to the triangle is less than 0, the triangle is facing the camera
-		if (normal.x * (triTranslated.p[0].x - vCamera.x) + 
-			normal.y * (triTranslated.p[0].y - vCamera.y) + 
+		if (normal.x * (triTranslated.p[0].x - vCamera.x) +
+			normal.y * (triTranslated.p[0].y - vCamera.y) +
 			normal.z * (triTranslated.p[0].z - vCamera.z) < 0.0f)
 		{
 
@@ -303,7 +303,7 @@ void Render()
 			//Store triangle for sorting
 			vecTrianglesToRaster.push_back(triProjected);
 
-			
+
 		}
 	}
 
@@ -315,7 +315,7 @@ void Render()
 			float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
 			return z1 > z2;
 		});
-	
+
 	for (auto& triProjected : vecTrianglesToRaster)
 	{
 		App::DrawLine(triProjected.p[0].x, triProjected.p[0].y, triProjected.p[1].x, triProjected.p[1].y);
@@ -326,6 +326,5 @@ void Render()
 
 void Shutdown()
 {
-    // No resources to clean up for line-drawn objects
+	// No resources to clean up for line-drawn objects
 }
-
