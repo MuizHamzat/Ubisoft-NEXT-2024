@@ -86,5 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TestData\donut.obj" />
+    <None Include="TestData\teapot.obj" />
   </ItemGroup>
 </Project>

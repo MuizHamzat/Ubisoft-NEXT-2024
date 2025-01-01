@@ -42,13 +42,13 @@ void Init()
 	matRotZ = MatrixMakeRotationZ(fTheta);
 
 	//Translation matrix
-	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 1.0f);
+	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 150.0f);
 
 	//World matrix
 	matWorld = MatrixMakeIdentity(); // Initialize the world matrix to the identity matrix
 	
 
-	meshCube.LoadFromObjectFile("TestData/donut.obj");
+	meshCube.LoadFromObjectFile("TestData/teapot.obj");
 
 	// Projection Matrix
 	// The projection matrix is used to convert 3D coordinates into 2D coordinates. This is done by multiplying the 3D coordinates by the projection matrix.
