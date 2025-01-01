@@ -19,10 +19,14 @@
 //Definitions
 //Player player(400.0f, 400.0f);
 
-float fTheta = 0.0f;
-mat4x4 matRotZ, matRotX; // Rotation matrices to perform rotations around the Z and X axes
+
 Mesh meshCube;
+
+float fTheta = 0.0f;
+mat4x4 matRotX, matRotY, matRotZ; // Rotation matrices to perform rotations around the x, y, and z axes
+mat4x4 matTrans;
 mat4x4 matProj; // Projection matrix
+mat4x4 matWorld; // World matrix, which is the matrix that represents the position of the object in the world, and holds all the transformation information of the object
 
 vec3d vCamera; // Camera position
 
@@ -32,69 +36,24 @@ void Init()
 	// Initial position of the object
 	//player.SetPosition(400.0f, 400.0f);
 
-	//Hard-code in the rotation matrices
+	//Rotation matrices
+	matRotX = MatrixMakeRotationX(fTheta);
+	matRotY = MatrixMakeRotationY(fTheta);
+	matRotZ = MatrixMakeRotationZ(fTheta);
 
-	// Rotation Z matrix
-	matRotZ.m[0][0] = cosf(fTheta);
-	matRotZ.m[0][1] = sinf(fTheta);
-	matRotZ.m[1][0] = -sinf(fTheta);
-	matRotZ.m[1][1] = cosf(fTheta);
-	matRotZ.m[2][2] = 1;
-	matRotZ.m[3][3] = 1;
+	//Translation matrix
+	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 1.0f);
 
-	// Rotation X matrix
-	matRotX.m[0][0] = 1;
-	matRotX.m[1][1] = cosf(fTheta * 0.5f);
-	matRotX.m[1][2] = sinf(fTheta * 0.5f);
-	matRotX.m[2][1] = -sinf(fTheta * 0.5f);
-	matRotX.m[2][2] = cosf(fTheta * 0.5f);
-	matRotX.m[3][3] = 1;
-
-	//meshCube.tris = {
-	//	// South (-z face)
-	//	{ 0.0f, 0.0f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f, 0.0f },
-	//	{ 0.0f, 0.0f, 0.0f,		1.0f, 1.0f, 0.0f,	1.0f, 0.0f, 0.0f },
-
-	//	// East (+x face)
-	//	{ 1.0f, 0.0f, 0.0f,		1.0f, 1.0f, 0.0f,	1.0f, 1.0f, 1.0f },
-	//	{ 1.0f, 0.0f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 0.0f, 1.0f },
-
-	//	// North (+z face)
-	//	{ 1.0f, 0.0f, 1.0f,		1.0f, 1.0f, 1.0f,	0.0f, 1.0f, 1.0f },
-	//	{ 1.0f, 0.0f, 1.0f,		0.0f, 1.0f, 1.0f,	0.0f, 0.0f, 1.0f },
-
-	//	// West (-x face)
-	//	{ 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 1.0f,	0.0f, 1.0f, 0.0f },
-	//	{ 0.0f, 0.0f, 1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f, 0.0f },
-
-	//	// Top (+y face)
-	//	{ 0.0f, 1.0f, 0.0f,		0.0f, 1.0f, 1.0f,	1.0f, 1.0f, 1.0f },
-	//	{ 0.0f, 1.0f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f, 0.0f },
-
-	//	// Bottom (-y face)
-	//	{ 1.0f, 0.0f, 1.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f, 0.0f },
-	//	{ 1.0f, 0.0f, 1.0f,		0.0f, 0.0f, 0.0f,	1.0f, 0.0f, 0.0f }
-
-	//};
+	//World matrix
+	matWorld = MatrixMakeIdentity(); // Initialize the world matrix to the identity matrix
+	
 
 	meshCube.LoadFromObjectFile("TestData/donut.obj");
 
 	// Projection Matrix
 	// The projection matrix is used to convert 3D coordinates into 2D coordinates. This is done by multiplying the 3D coordinates by the projection matrix.
 
-	float fNear = 0.1f; // Near clipping plane
-	float fFar = 1000.0f; // Far clipping plane
-	float fFov = 90.0f; // Field of view (90 degrees)
-	float fAspectRatio = (float)APP_VIRTUAL_HEIGHT / (float)APP_VIRTUAL_WIDTH;
-	float fFovRad = 1.0f / tanf(fFov * 0.5f / 180.0f * 3.14159f); // Convert field of view from degrees to radians
-
-	// Set the projection matrix (you could think of this as the projection matrix's definition. Any indexes that aren't declared here were initialized as 0).
-	matProj.m[0][0] = fAspectRatio * fFovRad;
-	matProj.m[1][1] = fFovRad;
-	matProj.m[2][2] = fFar / (fFar - fNear);
-	matProj.m[3][2] = (-fFar * fNear) / (fFar - fNear);
-	matProj.m[2][3] = 1.0f;
-	matProj.m[3][3] = 0.0f;
+	matProj = MatrixMakeProjection(90.0f, (float)APP_VIRTUAL_HEIGHT / (float)APP_VIRTUAL_WIDTH, 0.1f, 1000.0f);
 }
 
 void Update(float deltaTime)
@@ -119,21 +78,12 @@ void Update(float deltaTime)
 	fTheta += 0.001f * deltaTime; // Rotate the cube by 1 degree per frame
 
 	//Update the rotation matrices with the new rotation
-	// Rotation Z matrix
-	matRotZ.m[0][0] = cosf(fTheta);
-	matRotZ.m[0][1] = sinf(fTheta);
-	matRotZ.m[1][0] = -sinf(fTheta);
-	matRotZ.m[1][1] = cosf(fTheta);
-	matRotZ.m[2][2] = 1;
-	matRotZ.m[3][3] = 1;
+	matRotX = MatrixMakeRotationX(fTheta);
+	matRotY = MatrixMakeRotationY(fTheta);
+	matRotZ = MatrixMakeRotationZ(fTheta);
 
-	// Rotation X matrix
-	matRotX.m[0][0] = 1;
-	matRotX.m[1][1] = cosf(fTheta * 0.5f);
-	matRotX.m[1][2] = sinf(fTheta * 0.5f);
-	matRotX.m[2][1] = -sinf(fTheta * 0.5f);
-	matRotX.m[2][2] = cosf(fTheta * 0.5f);
-	matRotX.m[3][3] = 1;
+	matWorld = MatrixMultiplyMatrix(matRotZ, matRotX); // Multiply the world matrix by the Z and X rotation matrices, so the object rotates around the Z and X axes
+	matWorld = MatrixMultiplyMatrix(matWorld, matTrans); // Multiply the world matrix by the translation matrix, so the object is offset by the vector inputted to the translation matrix
 }
 
 void Render()
@@ -150,61 +100,50 @@ void Render()
 	//Draw triangles
 	for (auto tri : meshCube.tris) // For each triangle in the mesh:
 	{
-		triangle triProjected, triTranslated, triRotatedZ, triRotatedZX; // Transformed triangles to be projected, translated, and rotated
+		triangle triProjected, triTransformed; // Variables to represent the projected and transformed triangles of the object
 
-		// Rotate the triangle around the Z axis
-		MultiplyMatrixVector(tri.p[0], triRotatedZ.p[0], matRotZ);
-		MultiplyMatrixVector(tri.p[1], triRotatedZ.p[1], matRotZ);
-		MultiplyMatrixVector(tri.p[2], triRotatedZ.p[2], matRotZ);
-
-		// Rotate the triangle around the X axis
-		MultiplyMatrixVector(triRotatedZ.p[0], triRotatedZX.p[0], matRotX);
-		MultiplyMatrixVector(triRotatedZ.p[1], triRotatedZX.p[1], matRotX);
-		MultiplyMatrixVector(triRotatedZ.p[2], triRotatedZX.p[2], matRotX);
-
-		// Translate the triangle so it's not centered at the origin, which is where the camera is
-		triTranslated = triRotatedZX;
-		//Offset the triangle by 3 units
-		triTranslated.p[0].z = triRotatedZX.p[0].z + 1.0f;
-		triTranslated.p[1].z = triRotatedZX.p[1].z + 1.0f;
-		triTranslated.p[2].z = triRotatedZX.p[2].z + 1.0f;
+		// Multiply the world matrix by each point of the triangle to get the transformed points
+		triTransformed.p[0] = MatrixMultiplyVector(matWorld, tri.p[0]); 
+		triTransformed.p[1] = MatrixMultiplyVector(matWorld, tri.p[1]);
+		triTransformed.p[2] = MatrixMultiplyVector(matWorld, tri.p[2]);
 
 		// Calculate the normal of the triangle
 		vec3d normal, line1, line2;
-		line1.x = triTranslated.p[1].x - triTranslated.p[0].x;
-		line1.y = triTranslated.p[1].y - triTranslated.p[0].y;
-		line1.z = triTranslated.p[1].z - triTranslated.p[0].z;
+		
+		// Get the two lines of the triangle that extend from the first point of the triangle
+		line1 = VectorSubtract(triTransformed.p[1], triTransformed.p[0]);
+		line2 = VectorSubtract(triTransformed.p[2], triTransformed.p[0]);
 
-		line2.x = triTranslated.p[2].x - triTranslated.p[0].x;
-		line2.y = triTranslated.p[2].y - triTranslated.p[0].y;
-		line2.z = triTranslated.p[2].z - triTranslated.p[0].z;
+		//The normal of the triangle is the cross prodict of these two lines
+		normal = CrossProduct(line1, line2);
+		
+		//The normal must be normalized
+		normal = Normalize(normal);
 
-		//normal is the cross product of line1 and line2
-		normal.x = line1.y * line2.z - line1.z * line2.y;
-		normal.y = line1.z * line2.x - line1.x * line2.z;
-		normal.z = line1.x * line2.y - line1.y * line2.x;
+		//Make a ray from the triangle to camera
+		vec3d vCameraRay = VectorSubtract(triTransformed.p[0], vCamera);
 
-		//Normalize the normal
-		float l = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z); // Length of the normal found using Pythagorean theorem
-		normal.x /= l; normal.y /= l; normal.z /= l; // Normalize the normal
-
-		//if (normal.z < 0) // If the normal line of the triangle's z-component is less than 0, the triangle is facing the camera, so we should draw it. Otherwise, it's facing away from the camera and we shouldn't draw it.
-		// If the dot product of the normal and the vector from the camera to the triangle is less than 0, the triangle is facing the camera
-		if (normal.x * (triTranslated.p[0].x - vCamera.x) +
-			normal.y * (triTranslated.p[0].y - vCamera.y) +
-			normal.z * (triTranslated.p[0].z - vCamera.z) < 0.0f)
+		//If the ray is aligned with the triangle's normal, then the triangle is visible to the camera, therefore draw it. Otherwise, don't draw it.
+		if (DotProduct(normal, vCameraRay) < 0.0f)
 		{
-
 			// Project triangles from 3D to 2D
-			MultiplyMatrixVector(triTranslated.p[0], triProjected.p[0], matProj);
-			MultiplyMatrixVector(triTranslated.p[1], triProjected.p[1], matProj);
-			MultiplyMatrixVector(triTranslated.p[2], triProjected.p[2], matProj);
+			triProjected.p[0] = MatrixMultiplyVector(matProj, triTransformed.p[0]);
+			triProjected.p[1] = MatrixMultiplyVector(matProj, triTransformed.p[1]);
+			triProjected.p[2] = MatrixMultiplyVector(matProj, triTransformed.p[2]);
 
-			//Scale into view
-			triProjected.p[0].x += 1.0f; triProjected.p[0].y += 1.0f;
-			triProjected.p[1].x += 1.0f; triProjected.p[1].y += 1.0f;
-			triProjected.p[2].x += 1.0f; triProjected.p[2].y += 1.0f;
+			// Scale into view, then normalize the projected triangle to the screen
+			//We divide by the w component of the projected triangle to scale it into view
+			//The difference between the z component and the w component is that the z component is the distance from the camera to the object, while the w component is the distance from the camera to the object divided by the field of view. This is used to scale the object into view.
+			triProjected.p[0] = VectorDivide(triProjected.p[0], triProjected.p[0].w);
+			triProjected.p[1] = VectorDivide(triProjected.p[1], triProjected.p[1].w);
+			triProjected.p[2] = VectorDivide(triProjected.p[2], triProjected.p[2].w);
 
+			//Offset the projected triangle to the center of the screen
+			vec3d vOffsetView = { 1, 1, 0 };
+			triProjected.p[0] = VectorAdd(triProjected.p[0], vOffsetView);
+			triProjected.p[1] = VectorAdd(triProjected.p[1], vOffsetView);
+			triProjected.p[2] = VectorAdd(triProjected.p[2], vOffsetView);
+			//Scale the projected triangle to the screen
 			triProjected.p[0].x *= 0.5f * (float)APP_VIRTUAL_WIDTH;
 			triProjected.p[0].y *= 0.5f * (float)APP_VIRTUAL_HEIGHT;
 			triProjected.p[1].x *= 0.5f * (float)APP_VIRTUAL_WIDTH;

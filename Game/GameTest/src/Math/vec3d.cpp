@@ -28,3 +28,23 @@ vec3d Normalize(vec3d& v)
 	result.z = v.z / l;
 	return result;
 }
+
+vec3d VectorAdd(vec3d& v1, vec3d& v2)
+{
+	return { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+}
+
+vec3d VectorSubtract(vec3d& v1, vec3d& v2)
+{
+	return { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+}
+
+vec3d VectorMultiply(vec3d& v, float scalar)
+{
+	return { v.x * scalar, v.y * scalar, v.z * scalar };
+}
+
+vec3d VectorDivide(vec3d& v, float scalar)
+{
+	return { v.x / scalar, v.y / scalar, v.z / scalar };
+}
