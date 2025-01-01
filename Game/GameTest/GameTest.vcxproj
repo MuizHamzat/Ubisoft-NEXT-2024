@@ -187,11 +187,14 @@
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
-    <ClInclude Include="player.h" />
+    <ClInclude Include="src\Math\matrix.h" />
+    <ClInclude Include="src\Math\vec3d.h" />
+    <ClInclude Include="src\Graphics\mesh.h" />
+    <ClInclude Include="src\player.h" />
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="utility.h" />
+    <ClInclude Include="src\utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App\app.cpp" />
@@ -201,7 +204,10 @@
     <ClCompile Include="App\SimpleSprite.cpp" />
     <ClCompile Include="GameTest.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
-    <ClCompile Include="player.cpp" />
+    <ClCompile Include="src\Math\matrix.cpp" />
+    <ClCompile Include="src\Math\vec3d.cpp" />
+    <ClCompile Include="src\Graphics\mesh.cpp" />
+    <ClCompile Include="src\player.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -209,7 +215,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="utility.cpp" />
+    <ClCompile Include="src\utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestData\donut.obj">

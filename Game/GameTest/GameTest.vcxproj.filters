@@ -24,8 +24,11 @@
     <ClCompile Include="miniaudio\miniaudio.cpp">
       <Filter>API\third_party\miniaudio</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp" />
-    <ClCompile Include="utility.cpp" />
+    <ClCompile Include="src\player.cpp" />
+    <ClCompile Include="src\utility.cpp" />
+    <ClCompile Include="src\Math\vec3d.cpp" />
+    <ClCompile Include="src\Graphics\mesh.cpp" />
+    <ClCompile Include="src\Math\matrix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -56,8 +59,11 @@
     <ClInclude Include="miniaudio\miniaudio.h">
       <Filter>API\third_party\miniaudio</Filter>
     </ClInclude>
-    <ClInclude Include="player.h" />
-    <ClInclude Include="utility.h" />
+    <ClInclude Include="src\player.h" />
+    <ClInclude Include="src\utility.h" />
+    <ClInclude Include="src\Graphics\mesh.h" />
+    <ClInclude Include="src\Math\vec3d.h" />
+    <ClInclude Include="src\Math\matrix.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">

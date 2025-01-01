@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "utility.h"
-
+#include "App/app.h"
 #include <sstream> // For std::ostringstream
+
 
 namespace Utility
 {

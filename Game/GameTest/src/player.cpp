@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "player.h"
+#include "App/app.h"
+#include "utility.h"
 
 Player::Player(float xpos, float ypos) : x(xpos), y(ypos){}
 
