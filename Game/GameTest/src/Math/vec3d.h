@@ -31,3 +31,6 @@ vec3d VectorMultiply(vec3d& v, float scalar);
 //Divide a vector by a scalar
 vec3d VectorDivide(vec3d& v, float scalar);
 
+//Intersect a line and a plane
+vec3d VectorIntersectPlane(vec3d& plane_p, vec3d& plane_n, vec3d& lineStart, vec3d& lineEnd);
+

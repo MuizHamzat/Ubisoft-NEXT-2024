@@ -16,6 +16,12 @@ vec3d MatrixMultiplyVector(mat4x4& m, vec3d& i);
 // Multiply two matrices
 mat4x4 MatrixMultiplyMatrix(mat4x4& m1, mat4x4& m2);
 
+// Create a matrix that points at a target
+mat4x4 MatrixPointAt(vec3d& pos, vec3d& target, vec3d& up);
+
+// Create a quick inverse matrix only for Rotation/Translation matrices
+mat4x4 MatrixQuickInverse(mat4x4& m);
+
 //CREATING MATRICES
 
 //Make a translation matrix

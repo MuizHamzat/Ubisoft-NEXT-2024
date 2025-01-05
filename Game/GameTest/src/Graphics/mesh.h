@@ -8,6 +8,8 @@ struct triangle // 3 points of a triangle
 	vec3d p[3];
 };
 
+int TriangleClipAgainstPlane(vec3d plane_p, vec3d plane_n, triangle& in_tri, triangle& out_tri1, triangle& out_tri2);
+
 // 3D mesh of an object made up of triangles
 class Mesh {
 public:

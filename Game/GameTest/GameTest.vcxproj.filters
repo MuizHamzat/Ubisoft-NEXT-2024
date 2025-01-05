@@ -29,6 +29,7 @@
     <ClCompile Include="src\Math\vec3d.cpp" />
     <ClCompile Include="src\Graphics\mesh.cpp" />
     <ClCompile Include="src\Math\matrix.cpp" />
+    <ClCompile Include="src\Graphics\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -64,6 +65,7 @@
     <ClInclude Include="src\Graphics\mesh.h" />
     <ClInclude Include="src\Math\vec3d.h" />
     <ClInclude Include="src\Math\matrix.h" />
+    <ClInclude Include="src\Graphics\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
@@ -87,5 +89,6 @@
   <ItemGroup>
     <None Include="TestData\donut.obj" />
     <None Include="TestData\teapot.obj" />
+    <None Include="TestData\axis.obj" />
   </ItemGroup>
 </Project>

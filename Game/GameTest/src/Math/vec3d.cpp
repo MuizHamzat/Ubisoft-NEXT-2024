@@ -48,3 +48,15 @@ vec3d VectorDivide(vec3d& v, float scalar)
 {
 	return { v.x / scalar, v.y / scalar, v.z / scalar };
 }
+
+vec3d VectorIntersectPlane(vec3d& plane_p, vec3d& plane_n, vec3d& lineStart, vec3d& lineEnd)
+{
+	plane_n = Normalize(plane_n); // Make sure the normal is normalized
+	float plane_d = -DotProduct(plane_n, plane_p); // Get the distance to the plane from the origin
+	float ad = DotProduct(lineStart, plane_n); // Get the distance of the line start to the plane
+	float bd = DotProduct(lineEnd, plane_n); // Get the distance of the line end to the plane
+	float t = (-plane_d - ad) / (bd - ad); // Get the distance from the line start to the intersection point
+	vec3d lineStartToEnd = VectorSubtract(lineEnd, lineStart); // Get the vector from the line start to the line end
+	vec3d lineToIntersect = VectorMultiply(lineStartToEnd, t); // Get the vector from the line start to the intersection point
+	return VectorAdd(lineStart, lineToIntersect); // return the intersection point between the line and plane
+}
