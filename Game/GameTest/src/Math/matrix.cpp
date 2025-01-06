@@ -61,16 +61,15 @@ mat4x4 MatrixQuickInverse(mat4x4& m)
 
 //CREATING MATRICES
 
-mat4x4 MatrixMakeTranslation(float x, float y, float z)
+//Transforms
+
+mat4x4 MatrixMakeScaling(float x, float y, float z)
 {
 	mat4x4 matrix;
-	matrix.m[0][0] = 1.0f;
-	matrix.m[1][1] = 1.0f;
-	matrix.m[2][2] = 1.0f;
+	matrix.m[0][0] = x;
+	matrix.m[1][1] = y;
+	matrix.m[2][2] = z;
 	matrix.m[3][3] = 1.0f;
-	matrix.m[3][0] = x;
-	matrix.m[3][1] = y;
-	matrix.m[3][2] = z;
 	return matrix;
 }
 
@@ -109,6 +108,21 @@ mat4x4 MatrixMakeRotationZ(float fAngleRad)
 	matrix.m[3][3] = 1.0f;
 	return matrix;
 }
+
+mat4x4 MatrixMakeTranslation(float x, float y, float z)
+{
+	mat4x4 matrix;
+	matrix.m[0][0] = 1.0f;
+	matrix.m[1][1] = 1.0f;
+	matrix.m[2][2] = 1.0f;
+	matrix.m[3][3] = 1.0f;
+	matrix.m[3][0] = x;
+	matrix.m[3][1] = y;
+	matrix.m[3][2] = z;
+	return matrix;
+}
+
+//Misc
 
 mat4x4 MatrixMakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar)
 {

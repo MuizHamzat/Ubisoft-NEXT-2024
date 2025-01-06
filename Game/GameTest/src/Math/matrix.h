@@ -24,8 +24,10 @@ mat4x4 MatrixQuickInverse(mat4x4& m);
 
 //CREATING MATRICES
 
-//Make a translation matrix
-mat4x4 MatrixMakeTranslation(float x, float y, float z);
+//Transforms
+
+//Make a scaling matrix
+mat4x4 MatrixMakeScaling(float x, float y, float z);
 
 // Make a rotation matrix around the x axis
 mat4x4 MatrixMakeRotationX(float fAngleRad);
@@ -35,6 +37,11 @@ mat4x4 MatrixMakeRotationY(float fAngleRad);
 
 // Make a rotation matrix around the z axis
 mat4x4 MatrixMakeRotationZ(float fAngleRad);
+
+//Make a translation matrix
+mat4x4 MatrixMakeTranslation(float x, float y, float z);
+
+//Misc
 
 //Make a projection matrix (to project 3D coordinates to 2D coordinates)
 mat4x4 MatrixMakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar);

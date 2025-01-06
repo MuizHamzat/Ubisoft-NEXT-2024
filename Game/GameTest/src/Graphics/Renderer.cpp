@@ -8,17 +8,10 @@ Renderer::Renderer(){}
 
 void Renderer::Init()
 {
-	float fTheta = 0.0f;
-	//Rotation matrices
-	mat4x4 matRotX = MatrixMakeRotationX(fTheta);
-	mat4x4 matRotY = MatrixMakeRotationY(fTheta);
-	mat4x4 matRotZ = MatrixMakeRotationZ(fTheta);
+	//Translate object 30 units away from screen with translation matrix
+	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
 
-	////Translation matrix
-	mat4x4 matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
-	
-	//World matrix
-	matWorld = MatrixMakeIdentity(); // Initialize the world matrix to the identity matrix
+	// World matrix is initialized to the identity matrix
 	// Camera's position is already intialized as {0, 0, 0} in the vec3d struct
 	camera.lookDir = { 0, 0, -1 };
 	camera.up = { 0, 1, 0 };
@@ -35,17 +28,21 @@ void Renderer::Update(float deltaTime)
 {
 	MoveCamera(deltaTime);
 
-	float fTheta = 0.0f;
+	//Update scaling matrix
+	matScale = MatrixMakeScaling(1.0f, 1.0f, 1.0f);
+	
+	//Update the rotation matrices with the new rotation
+	matRotX = MatrixMakeRotationX(fTheta);
+	matRotY = MatrixMakeRotationY(fTheta);
+	matRotZ = MatrixMakeRotationZ(fTheta);
 
-	////Update the rotation matrices with the new rotation
-	mat4x4 matRotX = MatrixMakeRotationX(fTheta);
-	mat4x4 matRotY = MatrixMakeRotationY(fTheta);
-	mat4x4 matRotZ = MatrixMakeRotationZ(fTheta);
+	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
 
-	mat4x4 matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
-
-	matWorld = MatrixMultiplyMatrix(matRotZ, matRotX); // Multiply the world matrix by the Z and X rotation matrices, so the object rotates around the Z and X axes
-	matWorld = MatrixMultiplyMatrix(matWorld, matTrans); // Multiply the world matrix by the translation matrix, so the object is offset by the vector inputted to the translation matrix
+	//Apply transforms (scaling first, then rotations, then translations)
+	matWorld = MatrixMultiplyMatrix(matScale, matRotX);
+	matWorld = MatrixMultiplyMatrix(matWorld, matRotY);
+	matWorld = MatrixMultiplyMatrix(matWorld, matRotZ);
+	matWorld = MatrixMultiplyMatrix(matWorld, matTrans); // Currently rotates the object around the x-axis and translates it 30 units away from the screen
 
 	camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up);
 	matView = MatrixQuickInverse(camera.cameraMatrix);
