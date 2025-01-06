@@ -23,8 +23,8 @@ private:
 	Camera camera; // Camera object
 
 	mat4x4 matProj; // Projection matrix
-	mat4x4 matView; // View matrix
 	mat4x4 matWorld; // World matrix, which is the matrix that represents the position of the object in the world, and holds all the transformation information of the object
+	mat4x4 matView; // View matrix
 
 public:
 	Renderer();
