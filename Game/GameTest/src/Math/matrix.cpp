@@ -111,6 +111,12 @@ mat4x4 MatrixMakeRotationZ(float fAngleRad)
 
 mat4x4 MatrixMakeRotation(float fAngleRad, vec3d& axis)
 {
+	// Check if the axis is a zero vector
+	if (axis.x == 0 && axis.y == 0 && axis.z == 0)
+	{
+		return MatrixMakeIdentity();
+	}
+	
 	//Normalize the axis
 	axis = Normalize(axis);
 	float c = cosf(fAngleRad);

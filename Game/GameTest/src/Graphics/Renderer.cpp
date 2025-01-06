@@ -118,7 +118,7 @@ void Renderer::Render(std::vector<Mesh>& meshes)
 		float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
 		return z1 > z2;
 	});
-
+	
 	//Rasterize the triangles
 	for (auto& triToRaster : vecTrianglesToRaster)
 	{
