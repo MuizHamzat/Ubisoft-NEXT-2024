@@ -27,23 +27,19 @@ void Renderer::Init()
 void Renderer::Update(float deltaTime)
 {
 	MoveCamera(deltaTime);
-
-	//Update scaling matrix
-	matScale = MatrixMakeScaling(1.0f, 1.0f, 1.0f);
 	
-	//Update the rotation matrices with the new rotation
-	matRotX = MatrixMakeRotationX(fTheta);
-	matRotY = MatrixMakeRotationY(fTheta);
-	matRotZ = MatrixMakeRotationZ(fTheta);
+	fTheta += 0.001f * deltaTime; // Rotate the object around the x-axis
 
+	//Update transformation matrices
+	matScale = MatrixMakeScaling(1.0f, 1.0f, 1.0f);
+	matRot = MatrixMakeRotation(fTheta, vec3d{ 0, 0, 0 });
 	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
 
-	//Apply transforms (scaling first, then rotations, then translations)
-	matWorld = MatrixMultiplyMatrix(matScale, matRotX);
-	matWorld = MatrixMultiplyMatrix(matWorld, matRotY);
-	matWorld = MatrixMultiplyMatrix(matWorld, matRotZ);
-	matWorld = MatrixMultiplyMatrix(matWorld, matTrans); // Currently rotates the object around the x-axis and translates it 30 units away from the screen
+	//Apply transforms to world matrix (scaling first, then rotations, then translations)
+	matWorld = MatrixMultiplyMatrix(matScale, matRot);
+	matWorld = MatrixMultiplyMatrix(matWorld, matTrans);
 
+	//Update camera and view matrices
 	camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up);
 	matView = MatrixQuickInverse(camera.cameraMatrix);
 }

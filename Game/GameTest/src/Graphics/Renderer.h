@@ -29,11 +29,7 @@ private:
 	float fTheta = 0.0f; // Rotation angle
 
 	mat4x4 matScale = MatrixMakeScaling(1.0f, 1.0f, 1.0f); // Scaling matrix
-	
-	mat4x4 matRotX = MatrixMakeRotationX(fTheta); // Rotation matrix around the x-axis
-	mat4x4 matRotY = MatrixMakeRotationY(fTheta); // Rotation matrix around the y-axis
-	mat4x4 matRotZ = MatrixMakeRotationZ(fTheta); // Rotation matrix around the z-axis
-
+    mat4x4 matRot = MatrixMakeRotation(fTheta, vec3d{ 0, 0, 0 }); // Rotation matrix around an arbitrary axis
 	mat4x4 matTrans = MatrixMakeTranslation(0.0f, 0.0f, 0.0f); // Translation matrix
 
 	mat4x4 matWorld = MatrixMakeIdentity(); // World matrix, which is the matrix that represents the position of the object in the world, and holds all the transformation information of the object

@@ -38,6 +38,8 @@ mat4x4 MatrixMakeRotationY(float fAngleRad);
 // Make a rotation matrix around the z axis
 mat4x4 MatrixMakeRotationZ(float fAngleRad);
 
+mat4x4 MatrixMakeRotation(float fAngleRad, vec3d& axis);
+
 //Make a translation matrix
 mat4x4 MatrixMakeTranslation(float x, float y, float z);
 
