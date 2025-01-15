@@ -16,6 +16,10 @@
 #include "src/Graphics/Renderer.h"
 #include "src/Math/matrix.h"
 #include "src/Math/vec3d.h"
+
+#include "src/ECS/Coordinator.h"
+#include "src/Components/TransformComponent.h"
+#include "src/Components/MeshComponent.h"
 //------------------------------------------------------------------------
 //Definitions
 //Player player(400.0f, 400.0f);
@@ -43,6 +47,8 @@ float fYaw;
 
 std::vector<Mesh> meshes;
 
+Coordinator coordinator;
+
 //------------------------------------------------------------------------
 void Init()
 {
@@ -50,8 +56,24 @@ void Init()
 
 	meshCube.LoadFromObjectFile("TestData/axis.obj");
 	meshes.push_back(meshCube);
-}
 
+	coordinator.Init();
+
+	coordinator.RegisterComponent<TransformComponent>();
+	coordinator.RegisterComponent<MeshComponent>();
+
+	std::vector<Entity> entities(3);
+
+	for (auto& entity : entities)
+	{
+		entity = coordinator.CreateEntity();
+		coordinator.AddComponent(entity, TransformComponent{
+			.position = vec3d{0, 0, 0},
+			.rotation = vec3d{0, 0, 0},
+			.scale = vec3d{1, 1, 1}
+			});
+	}
+}
 void Update(float deltaTime)
 {
 	renderer.Update(deltaTime);

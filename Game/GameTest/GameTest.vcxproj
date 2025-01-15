@@ -217,11 +217,7 @@
     <ClCompile Include="App\SimpleSprite.cpp" />
     <ClCompile Include="GameTest.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
-    <ClCompile Include="src\ECS\ComponentArray.cpp" />
-    <ClCompile Include="src\ECS\ComponentManager.cpp" />
-    <ClCompile Include="src\ECS\Coordinator.cpp" />
     <ClCompile Include="src\ECS\EntityManager.cpp" />
-    <ClCompile Include="src\ECS\SystemManager.cpp" />
     <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Math\matrix.cpp" />
     <ClCompile Include="src\Math\vec3d.cpp" />
