@@ -37,7 +37,7 @@ void RenderSystem::Update(float deltaTime)
 {
 	MoveCamera(deltaTime);
 	//Update the view matrix
-	CameraComponent cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
+	auto& cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
 	cameraComponent.cameraMatrix = MatrixPointAt(cameraComponent.position, cameraComponent.target, cameraComponent.up);
 	matView = MatrixQuickInverse(cameraComponent.cameraMatrix);
 }
@@ -174,32 +174,32 @@ void RenderSystem::Render()
 
 void RenderSystem::MoveCamera(float deltaTime)
 {
-	CameraComponent cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
+	auto& cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
 	
 	//Allow user to move camera
 			//Up
 	if (App::GetController().GetLeftThumbStickY() > 0.5f)
 	{
-		cameraComponent.position.y += 0.01f * deltaTime;
+		cameraComponent.position.y += 0.001f * deltaTime;
 		//vLookDir.x += 0.01f * deltaTime;
 	}
 	//Down
 	if (App::GetController().GetLeftThumbStickY() < -0.5f)
 	{
-		cameraComponent.position.y -= 0.01f * deltaTime;
+		cameraComponent.position.y -= 0.001f * deltaTime;
 	}
 	//Left
 	if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	{
-		cameraComponent.position.x -= 0.01f * deltaTime;
+		cameraComponent.position.x -= 0.001f * deltaTime;
 	}
 	//Right
 	if (App::GetController().GetLeftThumbStickX() < -0.5f)
 	{
-		cameraComponent.position.x += 0.01f * deltaTime;
+		cameraComponent.position.x += 0.001f * deltaTime;
 	}
 
-	vec3d vForward = VectorMultiply(cameraComponent.lookDir, 0.01f * deltaTime);
+	vec3d vForward = VectorMultiply(cameraComponent.lookDir, 0.001f * deltaTime);
 	//Forward
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
 	{

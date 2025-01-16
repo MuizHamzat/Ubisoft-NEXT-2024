@@ -55,7 +55,7 @@ Coordinator gCoordinator;
 std::shared_ptr<RenderSystem> renderSystem;
 std::shared_ptr<TransformSystem> transformSystem;
 
-std::vector<Entity> entities(3);
+std::vector<Entity> entities(1);
 
 //------------------------------------------------------------------------
 void Init()
@@ -118,13 +118,14 @@ void Init()
 }
 void Update(float deltaTime)
 {
+	//float fTheta = 0.001f * deltaTime;
 	//renderer.Update(deltaTime);
 	renderSystem->Update(deltaTime);
 
 	for (auto& entity : entities)
 	{
 		auto& transformComponent = gCoordinator.GetComponent<TransformComponent>(entity);
-		//transformComponent.rotation.y += 0.001f * deltaTime;
+		//transformComponent.rotation.x += fTheta;
 		transformComponent.isDirty = true;
 	}
 
