@@ -1,77 +1,78 @@
 #include "stdafx.h"
 
-#include <algorithm>
-#include "Renderer.h"
+#include "RenderSystem.h"
+#include "src/ECS/Coordinator.h"
+#include "src/Components/TransformComponent.h"
+#include "src/Components/CameraComponent.h"
+#include "src/Components/MeshComponent.h"
 #include "App/app.h"
+#include <algorithm>
 
-Renderer::Renderer(){}
+extern Coordinator gCoordinator;
+//extern Entity camera;
 
-void Renderer::Init()
+void RenderSystem::Init()
 {
-	//Translate object 30 units away from screen with translation matrix
-	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
+	//INITIALIZING CAMERA
 
-	// World matrix is initialized to the identity matrix
-	// Camera's position is already intialized as {0, 0, 0} in the vec3d struct
-	camera.lookDir = { 0, 0, -1 };
-	camera.up = { 0, 1, 0 };
-	camera.target = VectorAdd(camera.pos, camera.lookDir);
+	camera = gCoordinator.CreateEntity();
 
-	camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up);
+	//Camera
+	CameraComponent cameraComponent;
+	cameraComponent.position = vec3d{ 0,0,0 };
+	cameraComponent.lookDir = vec3d{ 0,0,-1 };
+	cameraComponent.target = VectorAdd(cameraComponent.position, cameraComponent.lookDir);
+	cameraComponent.up = vec3d{ 0,1,0 };
+	//camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up)
+	cameraComponent.cameraMatrix = MatrixPointAt(cameraComponent.position, cameraComponent.target, cameraComponent.up);
+	gCoordinator.AddComponent(camera, cameraComponent);
+
 	//Make view matrix from the camera matrix
-	matView = MatrixQuickInverse(camera.cameraMatrix);
+	matView = MatrixQuickInverse(cameraComponent.cameraMatrix);
 
 	matProj = MatrixMakeProjection(90.0f, (float)APP_VIRTUAL_HEIGHT / (float)APP_VIRTUAL_WIDTH, 0.1f, 1000.0f);
 }
 
-void Renderer::Update(float deltaTime)
+void RenderSystem::Update(float deltaTime)
 {
 	MoveCamera(deltaTime);
-	
-	fTheta += 0.001f * deltaTime; // Rotate the object around the x-axis
-
-	//Update transformation matrices
-	matScale = MatrixMakeScaling(1.0f, 1.0f, 1.0f);
-	matRot = MatrixMakeRotation(vec3d{ 0, 0, 0 });
-	matTrans = MatrixMakeTranslation(0.0f, 0.0f, 30.0f);
-
-	//Apply transforms to world matrix (scaling first, then rotations, then translations)
-	matWorld = MatrixMultiplyMatrix(matScale, matRot);
-	matWorld = MatrixMultiplyMatrix(matWorld, matTrans);
-
-	//Update camera and view matrices
-	camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up);
-	matView = MatrixQuickInverse(camera.cameraMatrix);
+	//Update the view matrix
+	CameraComponent cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
+	cameraComponent.cameraMatrix = MatrixPointAt(cameraComponent.position, cameraComponent.target, cameraComponent.up);
+	matView = MatrixQuickInverse(cameraComponent.cameraMatrix);
 }
 
-void Renderer::Render(std::vector<Mesh>& meshes)
+void RenderSystem::Render()
 {
+	auto& cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
 	std::vector<triangle> vecTrianglesToRaster; // Vector of triangles to rasterize
 	
-	for (auto& mesh : meshes)
+	for (auto& const entity : entities)
 	{
-		for (auto& tri : mesh.tris)
+		auto& transformComponent = gCoordinator.GetComponent<TransformComponent>(entity);
+		auto& meshComponent = gCoordinator.GetComponent<MeshComponent>(entity);
+
+		for (auto& tri : meshComponent.mesh.tris)
 		{
 			triangle triProjected, triTransformed, triViewed; // Projected, transformed, and viewed triangles
 
 			//Transform the triangle
-			triTransformed.p[0] = MatrixMultiplyVector(matWorld, tri.p[0]);
-			triTransformed.p[1] = MatrixMultiplyVector(matWorld, tri.p[1]);
-			triTransformed.p[2] = MatrixMultiplyVector(matWorld, tri.p[2]);
+			triTransformed.p[0] = MatrixMultiplyVector(transformComponent.matWorld, tri.p[0]);
+			triTransformed.p[1] = MatrixMultiplyVector(transformComponent.matWorld, tri.p[1]);
+			triTransformed.p[2] = MatrixMultiplyVector(transformComponent.matWorld, tri.p[2]);
 
 			//Calculate the normal of the triangle
-			vec3d normal, line1, line2;
-			line1 = VectorSubtract(triTransformed.p[1], triTransformed.p[0]);
-			line2 = VectorSubtract(triTransformed.p[2], triTransformed.p[0]);
-			normal = CrossProduct(line1, line2);
+			vec3d line1 = VectorSubtract(triTransformed.p[1], triTransformed.p[0]);
+			vec3d line2 = VectorSubtract(triTransformed.p[2], triTransformed.p[0]);
+			vec3d normal = CrossProduct(line1, line2);
 			normal = Normalize(normal);
 
 			//Make a ray from the triangle to the camera
-			vec3d vCameraRay = VectorSubtract(triTransformed.p[0], camera.pos);
-
+			vec3d vCameraRay = VectorSubtract(triTransformed.p[0], cameraComponent.position);
 			//If the ray is aligned with the triangle's normal, then the triangle is visible to the camera, therefore draw it. Otherwise, don't draw it.
 			if (DotProduct(normal, vCameraRay) < 0.0f)
 			{
+				
 				//Convert world space into view space
 				triViewed.p[0] = MatrixMultiplyVector(matView, triTransformed.p[0]);
 				triViewed.p[1] = MatrixMultiplyVector(matView, triTransformed.p[1]);
@@ -113,12 +114,12 @@ void Renderer::Render(std::vector<Mesh>& meshes)
 
 	//Sort triangles from back to front
 	std::sort(vecTrianglesToRaster.begin(), vecTrianglesToRaster.end(), [](triangle& t1, triangle& t2)
-	{
-		float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3.0f;
-		float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
-		return z1 > z2;
-	});
-	
+		{
+			float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3.0f;
+			float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
+			return z1 > z2;
+		});
+
 	//Rasterize the triangles
 	for (auto& triToRaster : vecTrianglesToRaster)
 	{
@@ -171,57 +172,59 @@ void Renderer::Render(std::vector<Mesh>& meshes)
 	}
 }
 
-void Renderer::MoveCamera(float deltaTime)
+void RenderSystem::MoveCamera(float deltaTime)
 {
+	CameraComponent cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
+	
 	//Allow user to move camera
-	//Up
+			//Up
 	if (App::GetController().GetLeftThumbStickY() > 0.5f)
 	{
-		camera.pos.y += 0.01f * deltaTime;
+		cameraComponent.position.y += 0.01f * deltaTime;
 		//vLookDir.x += 0.01f * deltaTime;
 	}
 	//Down
 	if (App::GetController().GetLeftThumbStickY() < -0.5f)
 	{
-		camera.pos.y -= 0.01f * deltaTime;
+		cameraComponent.position.y -= 0.01f * deltaTime;
 	}
 	//Left
 	if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	{
-		camera.pos.x -= 0.01f * deltaTime;
+		cameraComponent.position.x -= 0.01f * deltaTime;
 	}
 	//Right
 	if (App::GetController().GetLeftThumbStickX() < -0.5f)
 	{
-		camera.pos.x += 0.01f * deltaTime;
+		cameraComponent.position.x += 0.01f * deltaTime;
 	}
 
-	vec3d vForward = VectorMultiply(camera.lookDir, 0.01f * deltaTime);
+	vec3d vForward = VectorMultiply(cameraComponent.lookDir, 0.01f * deltaTime);
 	//Forward
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
 	{
-		camera.pos = VectorSubtract(camera.pos, vForward);
+		cameraComponent.position = VectorSubtract(cameraComponent.position, vForward);
 	}
 	//Backward
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
 	{
-		camera.pos = VectorAdd(camera.pos, vForward);
+		cameraComponent.position = VectorAdd(cameraComponent.position, vForward);
 	}
 
 	// Rotate left
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
 	{
-		camera.fYaw -= 0.001f * deltaTime;
+		cameraComponent.fYaw -= 0.001f * deltaTime;
 	}
 	// Rotate right
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
 	{
-		camera.fYaw += 0.001f * deltaTime;
+		cameraComponent.fYaw += 0.001f * deltaTime;
 	}
 
 	//Update the look direction
-	camera.lookDir.x = sinf(camera.fYaw);
-	camera.lookDir.z = -cosf(camera.fYaw);
+	cameraComponent.lookDir.x = sinf(cameraComponent.fYaw);
+	cameraComponent.lookDir.z = -cosf(cameraComponent.fYaw);
 
-	camera.target = VectorAdd(camera.pos, camera.lookDir);
+	cameraComponent.target = VectorAdd(cameraComponent.position, cameraComponent.lookDir);
 }

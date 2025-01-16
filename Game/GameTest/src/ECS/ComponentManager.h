@@ -29,8 +29,8 @@ public:
 	{
 		const char* typeName = typeid(T).name(); //Get the name of the type as a string
 
-		assert(ComponentTypes.find(typeName) != ComponentTypes.end() && "Component not registered before use."); //Make sure the component type is registered
-		return ComponentTypes[typeName]; //Return the component type (used for creating signatures)
+		assert(componentTypes.find(typeName) != componentTypes.end() && "Component not registered before use."); //Make sure the component type is registered
+		return componentTypes[typeName]; //Return the component type (used for creating signatures)
 	}
 
 	//Add a component to an entity

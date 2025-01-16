@@ -109,34 +109,17 @@ mat4x4 MatrixMakeRotationZ(float fAngleRad)
 	return matrix;
 }
 
-mat4x4 MatrixMakeRotation(float fAngleRad, vec3d& axis)
+mat4x4 MatrixMakeRotation(vec3d& rotation)
 {
-	// Check if the axis is a zero vector
-	if (axis.x == 0 && axis.y == 0 && axis.z == 0)
-	{
-		return MatrixMakeIdentity();
-	}
-	
-	//Normalize the axis
-	axis = Normalize(axis);
-	float c = cosf(fAngleRad);
-	float s = sinf(fAngleRad);
-	float t = 1 - c;
-	float x = axis.x;
-	float y = axis.y;
-	float z = axis.z;
-	mat4x4 matrix;
-	matrix.m[0][0] = t * x * x + c;
-	matrix.m[0][1] = t * x * y + s * z;
-	matrix.m[0][2] = t * x * z - s * y;
-	matrix.m[1][0] = t * x * y - s * z;
-	matrix.m[1][1] = t * y * y + c;
-	matrix.m[1][2] = t * y * z + s * x;
-	matrix.m[2][0] = t * x * z + s * y;
-	matrix.m[2][1] = t * y * z - s * x;
-	matrix.m[2][2] = t * z * z + c;
-	matrix.m[3][3] = 1.0f;
-	return matrix;
+	mat4x4 matRotX = MatrixMakeRotationX(rotation.x);
+	mat4x4 matRotY = MatrixMakeRotationY(rotation.y);
+	mat4x4 matRotZ = MatrixMakeRotationZ(rotation.z);
+
+	// Combine the rotation matrices
+	mat4x4 matRotXY = MatrixMultiplyMatrix(matRotX, matRotY);
+	mat4x4 matRot = MatrixMultiplyMatrix(matRotXY, matRotZ);
+
+	return matRot;
 }
 
 mat4x4 MatrixMakeTranslation(float x, float y, float z)
