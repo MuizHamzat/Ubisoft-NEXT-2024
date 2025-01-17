@@ -38,6 +38,7 @@ mat4x4 MatrixMakeRotationY(float fAngleRad);
 // Make a rotation matrix around the z axis
 mat4x4 MatrixMakeRotationZ(float fAngleRad);
 
+//Make a rotation matrix around an arbitrary axis (angle in radians)S
 mat4x4 MatrixMakeRotation(vec3d& rotation);
 
 //Make a translation matrix

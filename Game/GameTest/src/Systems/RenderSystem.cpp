@@ -46,45 +46,57 @@ void RenderSystem::Render()
 {
 	auto& cameraComponent = gCoordinator.GetComponent<CameraComponent>(camera);
 	std::vector<triangle> vecTrianglesToRaster; // Vector of triangles to rasterize
-	
+
+	// Precompute the view-projection matrix
+	mat4x4 viewProjection = MatrixMultiplyMatrix(matProj, matView);
+
 	for (auto& const entity : entities)
 	{
 		auto& transformComponent = gCoordinator.GetComponent<TransformComponent>(entity);
 		auto& meshComponent = gCoordinator.GetComponent<MeshComponent>(entity);
 
+		mat4x4 worldTransform = transformComponent.matWorld;
+		// Precompute the world-view-projection matrix for the entity
+		mat4x4 worldViewProjection = MatrixMultiplyMatrix(viewProjection, worldTransform);
+
 		for (auto& tri : meshComponent.mesh.tris)
 		{
 			triangle triProjected, triTransformed, triViewed; // Projected, transformed, and viewed triangles
 
-			//Transform the triangle
-			triTransformed.p[0] = MatrixMultiplyVector(transformComponent.matWorld, tri.p[0]);
-			triTransformed.p[1] = MatrixMultiplyVector(transformComponent.matWorld, tri.p[1]);
-			triTransformed.p[2] = MatrixMultiplyVector(transformComponent.matWorld, tri.p[2]);
+			triTransformed.color = meshComponent.color;
 
-			//Calculate the normal of the triangle
-			vec3d line1 = VectorSubtract(triTransformed.p[1], triTransformed.p[0]);
-			vec3d line2 = VectorSubtract(triTransformed.p[2], triTransformed.p[0]);
-			vec3d normal = CrossProduct(line1, line2);
-			normal = Normalize(normal);
+			// Apply object-to-world transformation once per triangle
+			triTransformed.p[0] = MatrixMultiplyVector(worldTransform, tri.p[0]);
+			triTransformed.p[1] = MatrixMultiplyVector(worldTransform, tri.p[1]);
+			triTransformed.p[2] = MatrixMultiplyVector(worldTransform, tri.p[2]);
 
-			//Make a ray from the triangle to the camera
+			// Backface culling
+			vec3d normal = Normalize(CrossProduct(
+				VectorSubtract(triTransformed.p[1], triTransformed.p[0]),
+				VectorSubtract(triTransformed.p[2], triTransformed.p[0])
+			));
+
+			// Make a ray from the triangle to the camera
 			vec3d vCameraRay = VectorSubtract(triTransformed.p[0], cameraComponent.position);
-			//If the ray is aligned with the triangle's normal, then the triangle is visible to the camera, therefore draw it. Otherwise, don't draw it.
+			// If the ray is aligned with the triangle's normal, then the triangle is visible to the camera, therefore draw it. Otherwise, don't draw it.
 			if (DotProduct(normal, vCameraRay) < 0.0f)
 			{
+				triViewed.color = triTransformed.color;
 				
-				//Convert world space into view space
+				// Convert world space into view space
 				triViewed.p[0] = MatrixMultiplyVector(matView, triTransformed.p[0]);
 				triViewed.p[1] = MatrixMultiplyVector(matView, triTransformed.p[1]);
 				triViewed.p[2] = MatrixMultiplyVector(matView, triTransformed.p[2]);
 
-				//Clip viewed triangle against near plane. This could form two additional triangles
+				// Clip viewed triangle against near plane. This could form two additional triangles
 				int nClippedTriangles = 0;
 				triangle clipped[2];
 				nClippedTriangles = TriangleClipAgainstPlane({ 0.0f, 0.0f, -0.1f }, { 0.0f, 0.0f, -1.0f }, triViewed, clipped[0], clipped[1]);
 
 				for (int n = 0; n < nClippedTriangles; n++)
 				{
+					triProjected.color = triViewed.color;
+					
 					// Project triangles from 3D to 2D
 					triProjected.p[0] = MatrixMultiplyVector(matProj, clipped[n].p[0]);
 					triProjected.p[1] = MatrixMultiplyVector(matProj, clipped[n].p[1]);
@@ -93,26 +105,26 @@ void RenderSystem::Render()
 					triProjected.p[0] = VectorDivide(triProjected.p[0], triProjected.p[0].w);
 					triProjected.p[1] = VectorDivide(triProjected.p[1], triProjected.p[1].w);
 					triProjected.p[2] = VectorDivide(triProjected.p[2], triProjected.p[2].w);
-					//Offset the projected triangle to the center of the screen
+					// Offset the projected triangle to the center of the screen
 					vec3d vOffsetView = { 1, 1, 0 };
 					triProjected.p[0] = VectorAdd(triProjected.p[0], vOffsetView);
 					triProjected.p[1] = VectorAdd(triProjected.p[1], vOffsetView);
 					triProjected.p[2] = VectorAdd(triProjected.p[2], vOffsetView);
-					//Scale the projected triangle to the screen
+					// Scale the projected triangle to the screen
 					triProjected.p[0].x *= 0.5f * (float)APP_VIRTUAL_WIDTH;
 					triProjected.p[0].y *= 0.5f * (float)APP_VIRTUAL_HEIGHT;
 					triProjected.p[1].x *= 0.5f * (float)APP_VIRTUAL_WIDTH;
 					triProjected.p[1].y *= 0.5f * (float)APP_VIRTUAL_HEIGHT;
 					triProjected.p[2].x *= 0.5f * (float)APP_VIRTUAL_WIDTH;
 					triProjected.p[2].y *= 0.5f * (float)APP_VIRTUAL_HEIGHT;
-					//Store triangle for sorting
+					// Store triangle for sorting
 					vecTrianglesToRaster.push_back(triProjected);
 				}
 			}
 		}
 	}
 
-	//Sort triangles from back to front
+	// Sort triangles from back to front
 	std::sort(vecTrianglesToRaster.begin(), vecTrianglesToRaster.end(), [](triangle& t1, triangle& t2)
 		{
 			float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3.0f;
@@ -120,7 +132,7 @@ void RenderSystem::Render()
 			return z1 > z2;
 		});
 
-	//Rasterize the triangles
+	// Rasterize the triangles
 	for (auto& triToRaster : vecTrianglesToRaster)
 	{
 		// Clip the triangle against all four screen edges, this could yield a bunch of triangles
@@ -142,13 +154,13 @@ void RenderSystem::Render()
 				// Clip it against a plane. We only need to test each point in the triangle against the near plane
 				switch (p)
 				{
-					//Clip against the top plane
+					// Clip against the top plane
 				case 0: nTrisToAdd = TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, test, clipped[0], clipped[1]); break;
-					//Clip against the bottom plane
+					// Clip against the bottom plane
 				case 1: nTrisToAdd = TriangleClipAgainstPlane({ 0.0f, (float)APP_VIRTUAL_HEIGHT - 1, 0.0f }, { 0.0f, -1.0f, 0.0f }, test, clipped[0], clipped[1]); break;
-					//Clip against the left plane
+					// Clip against the left plane
 				case 2: nTrisToAdd = TriangleClipAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]); break;
-					//Clip against the right plane
+					// Clip against the right plane
 				case 3: nTrisToAdd = TriangleClipAgainstPlane({ (float)APP_VIRTUAL_WIDTH - 1, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]); break;
 				}
 
@@ -165,12 +177,13 @@ void RenderSystem::Render()
 		// Draw the clipped triangles
 		for (auto& t : listTriangles)
 		{
-			App::DrawLine(t.p[0].x, t.p[0].y, t.p[1].x, t.p[1].y);
-			App::DrawLine(t.p[1].x, t.p[1].y, t.p[2].x, t.p[2].y);
-			App::DrawLine(t.p[2].x, t.p[2].y, t.p[0].x, t.p[0].y);
+			App::DrawLine(t.p[0].x, t.p[0].y, t.p[1].x, t.p[1].y, t.color.r, t.color.g, t.color.b);
+			App::DrawLine(t.p[1].x, t.p[1].y, t.p[2].x, t.p[2].y, t.color.r, t.color.g, t.color.b);
+			App::DrawLine(t.p[2].x, t.p[2].y, t.p[0].x, t.p[0].y, t.color.r, t.color.g, t.color.b);
 		}
 	}
 }
+
 
 void RenderSystem::MoveCamera(float deltaTime)
 {

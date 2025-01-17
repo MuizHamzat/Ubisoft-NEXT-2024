@@ -2,10 +2,12 @@
 
 #include "stdafx.h"
 #include "src/math/vec3d.h"
+#include "Color.h"
 
 struct triangle // 3 points of a triangle
 {
 	vec3d p[3];
+	Color color;
 };
 
 int TriangleClipAgainstPlane(vec3d plane_p, vec3d plane_n, triangle& in_tri, triangle& out_tri1, triangle& out_tri2);

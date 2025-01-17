@@ -6,9 +6,11 @@
 //------------------------------------------------------------------------
 #include "stdafx.h"
 //------------------------------------------------------------------------
+#define _USE_MATH_DEFINES
 #include <windows.h> 
 #include <math.h>
 #include <algorithm>
+#include <cmath>
 #include "src/player.h"
 #include "src/utility.h"
 #include "app/app.h"
@@ -55,7 +57,8 @@ Coordinator gCoordinator;
 std::shared_ptr<RenderSystem> renderSystem;
 std::shared_ptr<TransformSystem> transformSystem;
 
-std::vector<Entity> entities(1);
+std::vector<Entity> entities;
+Entity ball;
 
 //------------------------------------------------------------------------
 void Init()
@@ -87,45 +90,49 @@ void Init()
 		gCoordinator.SetSystemSignature<TransformSystem>(signature);
 	}
 
-	float counter = 0;
-	//std::vector<std::string> meshFiles = { "TestData/donut.obj", "TestData/axis.obj", "TestData/teapot.obj" };
+	//Create golf ball
+	ball = gCoordinator.CreateEntity();
+	entities.push_back(ball);
 
-	for (auto& entity : entities)
-	{
-		entity = gCoordinator.CreateEntity();
+	TransformComponent ballTransform;
+	ballTransform.position = vec3d{ 0, 0, 5 };
+	ballTransform.rotation = vec3d{ 0, 0, 0 };
+	ballTransform.scale = vec3d{ 1, 1, 1 };
+	gCoordinator.AddComponent(ball, ballTransform);
 
-		TransformComponent transformComponent;
-		transformComponent.position = vec3d{ counter-1, 0, 3 };
-		transformComponent.rotation = vec3d{ 1, 0, 0 };
-		transformComponent.scale = vec3d{ 1, 1, 1 };
-		gCoordinator.AddComponent(entity, transformComponent);
+	MeshComponent ballMesh;
+	ballMesh.mesh.LoadFromObjectFile("TestData/golfBallLP.obj");
+	ballMesh.color = Color{ 0, 0, 1 };
+	gCoordinator.AddComponent(ball, ballMesh);
 
-		MeshComponent meshComponent;
-		meshComponent.mesh.LoadFromObjectFile("TestData/donut.obj");
-		gCoordinator.AddComponent(entity, meshComponent);
+	//Create hole
+	Entity hole = gCoordinator.CreateEntity();
+	entities.push_back(hole);
 
-		counter++;
-	}
+	TransformComponent holeTransform;
+	holeTransform.position = vec3d{ 0, 0, 10 };
+	holeTransform.rotation = vec3d{ M_PI/2, 0, 0 };
+	holeTransform.scale = vec3d{ 3, 3, 3 };
+	gCoordinator.AddComponent(hole, holeTransform);
 
-	//CameraComponent cameraComponent;
-	//cameraComponent.position = vec3d{ 0,0,0 };
-	//cameraComponent.lookDir = vec3d{ 0,0,-1 };
-	//cameraComponent.target = VectorAdd(cameraComponent.position, cameraComponent.lookDir);
-	//cameraComponent.up = vec3d{ 0,1,0 };
-	////camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up)
-	//cameraComponent.cameraMatrix = MatrixPointAt(cameraComponent.position, cameraComponent.target, cameraComponent.up);
-	//gCoordinator.AddComponent(camera, cameraComponent);
+	MeshComponent holeMesh;
+	holeMesh.mesh.LoadFromObjectFile("TestData/donut.obj");
+	holeMesh.color = Color{ 0, 1, 0 };
+	gCoordinator.AddComponent(hole, holeMesh);
 }
 void Update(float deltaTime)
 {
-	//float fTheta = 0.001f * deltaTime;
+	float fTheta = 0.001f * deltaTime;
 	//renderer.Update(deltaTime);
 	renderSystem->Update(deltaTime);
+
+	auto& ballTransform = gCoordinator.GetComponent<TransformComponent>(ball);
+	ballTransform.rotation.x += fTheta;
+	ballTransform.rotation.x = fmod(ballTransform.rotation.x, 2.0f * M_PI); // Keep rotation within 0-2pi radians
 
 	for (auto& entity : entities)
 	{
 		auto& transformComponent = gCoordinator.GetComponent<TransformComponent>(entity);
-		//transformComponent.rotation.x += fTheta;
 		transformComponent.isDirty = true;
 	}
 
