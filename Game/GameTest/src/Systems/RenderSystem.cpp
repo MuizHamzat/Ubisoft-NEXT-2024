@@ -21,9 +21,8 @@ void RenderSystem::Init()
 	CameraComponent cameraComponent;
 	cameraComponent.position = vec3d{ 0,0,0 };
 	cameraComponent.lookDir = vec3d{ 0,0,-1 };
-	cameraComponent.target = VectorAdd(cameraComponent.position, cameraComponent.lookDir);
+	cameraComponent.target = cameraComponent.position + cameraComponent.lookDir;
 	cameraComponent.up = vec3d{ 0,1,0 };
-	//camera.cameraMatrix = MatrixPointAt(camera.pos, camera.target, camera.up)
 	cameraComponent.cameraMatrix = MatrixPointAt(cameraComponent.position, cameraComponent.target, cameraComponent.up);
 	gCoordinator.AddComponent(camera, cameraComponent);
 
@@ -72,12 +71,12 @@ void RenderSystem::Render()
 
 			// Backface culling
 			vec3d normal = Normalize(CrossProduct(
-				VectorSubtract(triTransformed.p[1], triTransformed.p[0]),
-				VectorSubtract(triTransformed.p[2], triTransformed.p[0])
+				triTransformed.p[1] - triTransformed.p[0],
+				triTransformed.p[2] - triTransformed.p[0]
 			));
 
 			// Make a ray from the triangle to the camera
-			vec3d vCameraRay = VectorSubtract(triTransformed.p[0], cameraComponent.position);
+			vec3d vCameraRay = triTransformed.p[0] - cameraComponent.position;
 			// If the ray is aligned with the triangle's normal, then the triangle is visible to the camera, therefore draw it. Otherwise, don't draw it.
 			if (DotProduct(normal, vCameraRay) < 0.0f)
 			{
@@ -102,14 +101,14 @@ void RenderSystem::Render()
 					triProjected.p[1] = MatrixMultiplyVector(matProj, clipped[n].p[1]);
 					triProjected.p[2] = MatrixMultiplyVector(matProj, clipped[n].p[2]);
 					// Scale into view, then normalize the projected triangle to the screen
-					triProjected.p[0] = VectorDivide(triProjected.p[0], triProjected.p[0].w);
-					triProjected.p[1] = VectorDivide(triProjected.p[1], triProjected.p[1].w);
-					triProjected.p[2] = VectorDivide(triProjected.p[2], triProjected.p[2].w);
+					triProjected.p[0] = triProjected.p[0] / triProjected.p[0].w;
+					triProjected.p[1] = triProjected.p[1] / triProjected.p[1].w;
+					triProjected.p[2] = triProjected.p[2] / triProjected.p[2].w;
 					// Offset the projected triangle to the center of the screen
 					vec3d vOffsetView = { 1, 1, 0 };
-					triProjected.p[0] = VectorAdd(triProjected.p[0], vOffsetView);
-					triProjected.p[1] = VectorAdd(triProjected.p[1], vOffsetView);
-					triProjected.p[2] = VectorAdd(triProjected.p[2], vOffsetView);
+					triProjected.p[0] = triProjected.p[0] + vOffsetView;
+					triProjected.p[1] = triProjected.p[1] + vOffsetView;
+					triProjected.p[2] = triProjected.p[2] + vOffsetView;
 					// Scale the projected triangle to the screen
 					triProjected.p[0].x *= 0.5f * (float)APP_VIRTUAL_WIDTH;
 					triProjected.p[0].y *= 0.5f * (float)APP_VIRTUAL_HEIGHT;
@@ -216,12 +215,12 @@ void RenderSystem::MoveCamera(float deltaTime)
 	//Forward
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
 	{
-		cameraComponent.position = VectorSubtract(cameraComponent.position, vForward);
+		cameraComponent.position = cameraComponent.position - vForward;
 	}
 	//Backward
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
 	{
-		cameraComponent.position = VectorAdd(cameraComponent.position, vForward);
+		cameraComponent.position = cameraComponent.position + vForward;
 	}
 
 	// Rotate left
@@ -239,5 +238,5 @@ void RenderSystem::MoveCamera(float deltaTime)
 	cameraComponent.lookDir.x = sinf(cameraComponent.fYaw);
 	cameraComponent.lookDir.z = -cosf(cameraComponent.fYaw);
 
-	cameraComponent.target = VectorAdd(cameraComponent.position, cameraComponent.lookDir);
+	cameraComponent.target = cameraComponent.position + cameraComponent.lookDir;
 }

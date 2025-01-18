@@ -8,7 +8,77 @@ struct vec3d // 3D vector
 	float y = 0;
 	float z = 0;
 	float w = 1; // w component, used for perspective projection
+
+	//Operator overloads
+
+	// Addition
+	vec3d operator+(const vec3d& other) const
+	{
+		return { x + other.x, y + other.y, z + other.z, w };
+	}
+
+	// Subtraction
+	vec3d operator-(const vec3d& other) const
+	{
+		return { x - other.x, y - other.y, z - other.z, w };
+	}
+
+	// Multiplication by scalar
+	vec3d operator*(float scalar) const
+	{
+		return { x * scalar, y * scalar, z * scalar, w };
+	}
+
+	// Division by scalar
+	vec3d operator/(float scalar) const
+	{
+		return { x / scalar, y / scalar, z / scalar, w };
+	}
+
+	// Compound assignment operators
+	vec3d& operator+=(const vec3d& other)
+	{
+		x += other.x;
+		y += other.y;
+		z += other.z;
+		return *this;
+	}
+
+	vec3d& operator-=(const vec3d& other)
+	{
+		x -= other.x;
+		y -= other.y;
+		z -= other.z;
+		return *this;
+	}
+
+	vec3d& operator*=(float scalar)
+	{
+		x *= scalar;
+		y *= scalar;
+		z *= scalar;
+		return *this;
+	}
+
+	vec3d& operator/=(float scalar)
+	{
+		x /= scalar;
+		y /= scalar;
+		z /= scalar;
+		return *this;
+	}
 };
+
+// Non-member functions for scalar operations (these are here so that we can write both scalar * vector and vector * scalar)
+vec3d operator*(float scalar, const vec3d& vec)
+{
+	return { vec.x * scalar, vec.y * scalar, vec.z * scalar, vec.w };
+}
+
+vec3d operator/(float scalar, const vec3d& vec)
+{
+	return { scalar / vec.x, scalar / vec.y, scalar / vec.z, vec.w };
+}
 
 //Calculate the dot product of two vectors
 float DotProduct(vec3d& v1, vec3d& v2);
