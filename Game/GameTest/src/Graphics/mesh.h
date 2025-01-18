@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include "src/math/vec3d.h"
 #include "Color.h"
 
 struct triangle // 3 points of a triangle

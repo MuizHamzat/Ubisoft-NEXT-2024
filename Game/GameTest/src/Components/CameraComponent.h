@@ -1,8 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include "src/Math/vec3d.h"
-#include "src/Math/matrix.h"
 
 struct CameraComponent
 {

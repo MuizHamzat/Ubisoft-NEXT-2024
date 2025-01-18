@@ -19,3 +19,5 @@
 #include <list>
 #include <fstream>
 #include <sstream>
+#include "src/Math/matrix.h"
+#include "src/Math/vec3d.h"

@@ -3,8 +3,6 @@
 #include "stdafx.h"
 
 #include "src/ECS/Component.h"
-#include "src/Math/vec3d.h"
-#include "src/Math/matrix.h"
 
 struct TransformComponent
 {

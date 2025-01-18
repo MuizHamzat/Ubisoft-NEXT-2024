@@ -189,6 +189,7 @@
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\Components\CameraComponent.h" />
+    <ClInclude Include="src\Components\DynamicsComponent.h" />
     <ClInclude Include="src\ECS\Component.h" />
     <ClInclude Include="src\Components\MeshComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
@@ -201,11 +202,10 @@
     <ClInclude Include="src\ECS\System.h" />
     <ClInclude Include="src\ECS\SystemManager.h" />
     <ClInclude Include="src\Graphics\Color.h" />
-    <ClInclude Include="src\Graphics\Renderer.h" />
     <ClInclude Include="src\Math\matrix.h" />
     <ClInclude Include="src\Math\vec3d.h" />
     <ClInclude Include="src\Graphics\mesh.h" />
-    <ClInclude Include="src\player.h" />
+    <ClInclude Include="src\Systems\DynamicsSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Systems\TransformSystem.h" />
     <ClInclude Include="stb_image\stb_image.h" />
@@ -222,11 +222,9 @@
     <ClCompile Include="GameTest.cpp" />
     <ClCompile Include="miniaudio\miniaudio.cpp" />
     <ClCompile Include="src\ECS\EntityManager.cpp" />
-    <ClCompile Include="src\Graphics\Renderer.cpp" />
     <ClCompile Include="src\Math\matrix.cpp" />
     <ClCompile Include="src\Math\vec3d.cpp" />
     <ClCompile Include="src\Graphics\mesh.cpp" />
-    <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\Systems\RenderSystem.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
