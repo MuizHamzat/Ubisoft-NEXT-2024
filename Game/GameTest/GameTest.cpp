@@ -16,8 +16,10 @@
 #include "src/Components/TransformComponent.h"
 #include "src/Components/CameraComponent.h"
 #include "src/Components/MeshComponent.h"
+#include "src/Components/DynamicsComponent.h"
 #include "src/Systems/RenderSystem.h"
 #include "src/Systems/TransformSystem.h"
+#include "src/Systems/DynamicsSystem.h"
 //------------------------------------------------------------------------
 //Definitions
 
@@ -39,6 +41,7 @@ Coordinator gCoordinator;
 
 std::shared_ptr<RenderSystem> renderSystem;
 std::shared_ptr<TransformSystem> transformSystem;
+std::shared_ptr<DynamicsSystem> dynamicsSystem;
 
 std::vector<Entity> entities;
 Entity ball;
@@ -51,6 +54,7 @@ void Init()
 	gCoordinator.RegisterComponent<TransformComponent>();
 	gCoordinator.RegisterComponent<CameraComponent>();
 	gCoordinator.RegisterComponent<MeshComponent>();
+	gCoordinator.RegisterComponent<DynamicsComponent>();
 
 	renderSystem = gCoordinator.RegisterSystem<RenderSystem>();
 	{
@@ -68,12 +72,20 @@ void Init()
 		gCoordinator.SetSystemSignature<TransformSystem>(signature);
 	}
 
+	dynamicsSystem = gCoordinator.RegisterSystem<DynamicsSystem>();
+	{
+		Signature signature;
+		signature.set(gCoordinator.GetComponentType<TransformComponent>());
+		signature.set(gCoordinator.GetComponentType<DynamicsComponent>());
+		gCoordinator.SetSystemSignature<DynamicsSystem>(signature);
+	}
+
 	//Create golf ball
 	ball = gCoordinator.CreateEntity();
 	entities.push_back(ball);
 
 	TransformComponent ballTransform;
-	ballTransform.position = vec3d{ 0, 0, 5 };
+	ballTransform.position = vec3d{ 0, 5, 5 };
 	ballTransform.rotation = vec3d{ 0, 0, 0 };
 	ballTransform.scale = vec3d{ 1, 1, 1 };
 	gCoordinator.AddComponent(ball, ballTransform);
@@ -82,6 +94,10 @@ void Init()
 	ballMesh.mesh.LoadFromObjectFile("TestData/golfBallLP.obj");
 	ballMesh.color = Color{ 0, 0, 1 };
 	gCoordinator.AddComponent(ball, ballMesh);
+
+	DynamicsComponent ballDynamics;
+	//ballDynamics.mass = 1.0f;
+	gCoordinator.AddComponent(ball, ballDynamics);
 
 	//Create hole
 	Entity hole = gCoordinator.CreateEntity();
@@ -95,13 +111,12 @@ void Init()
 
 	MeshComponent holeMesh;
 	holeMesh.mesh.LoadFromObjectFile("TestData/donut.obj");
-	holeMesh.color = Color{ 0, 1, 0 };
+	holeMesh.color = Color{ 1, 1, 0 };
 	gCoordinator.AddComponent(hole, holeMesh);
 }
 void Update(float deltaTime)
 {
 	float fTheta = 0.001f * deltaTime;
-	renderSystem->Update(deltaTime);
 
 	auto& ballTransform = gCoordinator.GetComponent<TransformComponent>(ball);
 	ballTransform.rotation.x += fTheta;
@@ -114,6 +129,8 @@ void Update(float deltaTime)
 	}
 
 	transformSystem->Update(deltaTime);
+	dynamicsSystem->Update(deltaTime);
+	renderSystem->Update(deltaTime);
 }
 
 void Render()

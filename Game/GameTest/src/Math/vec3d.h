@@ -70,10 +70,10 @@ struct vec3d // 3D vector
 };
 
 // Non-member functions for scalar operations (these are here so that we can write both scalar * vector and vector * scalar)
-vec3d operator*(float scalar, const vec3d& vec)
-{
-	return { vec.x * scalar, vec.y * scalar, vec.z * scalar, vec.w };
-}
+//vec3d operator*(float scalar, const vec3d& vec)
+//{
+//	return { vec.x * scalar, vec.y * scalar, vec.z * scalar, vec.w };
+//}
 
 vec3d operator/(float scalar, const vec3d& vec)
 {
