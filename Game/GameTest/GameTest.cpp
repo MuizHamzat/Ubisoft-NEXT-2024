@@ -116,7 +116,7 @@ void Init()
 
 	MeshComponent ballMesh;
 	ballMesh.mesh.LoadFromObjectFile("TestData/golfBallLP.obj");
-	ballMesh.color = Color{ 0, 0, 1 };
+	ballMesh.color = Color{ 1, 1, 1 };
 	gCoordinator.AddComponent(ball, ballMesh);
 
 	DynamicsComponent ballDynamics;

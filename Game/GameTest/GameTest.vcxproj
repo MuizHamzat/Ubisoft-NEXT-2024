@@ -190,7 +190,6 @@
     <ClInclude Include="miniaudio\miniaudio.h" />
     <ClInclude Include="src\Components\CameraComponent.h" />
     <ClInclude Include="src\Components\DynamicsComponent.h" />
-    <ClInclude Include="src\Components\RigidBodyComponent.h" />
     <ClInclude Include="src\ECS\Component.h" />
     <ClInclude Include="src\Components\MeshComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
@@ -204,11 +203,8 @@
     <ClInclude Include="src\ECS\SystemManager.h" />
     <ClInclude Include="src\Graphics\Color.h" />
     <ClInclude Include="src\Math\matrix.h" />
-    <ClInclude Include="src\Math\quat.h" />
     <ClInclude Include="src\Math\vec3d.h" />
     <ClInclude Include="src\Graphics\mesh.h" />
-    <ClInclude Include="src\Physics\Contact.h" />
-    <ClInclude Include="src\Physics\physics.h" />
     <ClInclude Include="src\Systems\DynamicsSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
     <ClInclude Include="src\Systems\TransformSystem.h" />
@@ -227,7 +223,6 @@
     <ClCompile Include="miniaudio\miniaudio.cpp" />
     <ClCompile Include="src\ECS\EntityManager.cpp" />
     <ClCompile Include="src\Math\matrix.cpp" />
-    <ClCompile Include="src\Math\quat.cpp" />
     <ClCompile Include="src\Math\vec3d.cpp" />
     <ClCompile Include="src\Graphics\mesh.cpp" />
     <ClCompile Include="src\Systems\RenderSystem.cpp" />
