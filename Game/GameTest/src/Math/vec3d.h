@@ -9,6 +9,7 @@ struct vec3d // 3D vector
 	float z = 0;
 	float w = 1; // w component, used for perspective projection
 
+
 	//Operator overloads
 
 	// Addition
@@ -79,6 +80,11 @@ vec3d operator/(float scalar, const vec3d& vec)
 {
 	return { scalar / vec.x, scalar / vec.y, scalar / vec.z, vec.w };
 }
+
+//Calculate the magnitude of a vector
+float Magnitude(vec3d& v);
+
+vec3d ComponentProduct(vec3d& v1, vec3d& v2);
 
 //Calculate the dot product of two vectors
 float DotProduct(vec3d& v1, vec3d& v2);

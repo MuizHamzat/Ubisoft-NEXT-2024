@@ -13,7 +13,7 @@ public:
 	void Update(float deltaTime)
 	{
 		//Scale deltaTime so that a more relistic value can be used for gravity
-		double scaledDeltaTime = (double)deltaTime * timeScale;
+		double physicsDeltaTime = (double)deltaTime * timeScale;
 		
 		for (auto const& entity : entities)
 		{
@@ -21,8 +21,12 @@ public:
 			auto& transform = gCoordinator.GetComponent<TransformComponent>(entity);
 			dynamics.force += gravity * dynamics.mass; //Apply gravity to the entity
 
-			dynamics.velocity += dynamics.force / dynamics.mass * (float)scaledDeltaTime; //Update velocity
-			transform.position += dynamics.velocity * (float)scaledDeltaTime; //Update position
+			dynamics.velocity += dynamics.force / dynamics.mass * (float)physicsDeltaTime; //Update velocity
+			//Couldve also been dynamics.velocity += dynamics.acceleration * (float)physicsDeltaTime;
+			transform.position += dynamics.velocity * (float)physicsDeltaTime; //Update position
+
+			//Impose drag
+			//dynamics.velocity *= powf(1 - dynamics.damping, (float)physicsDeltaTime); //Uses the physics equation v = v * (1 - damping)^t
 
 			dynamics.force = { 0, 0, 0 }; //Reset force
 
@@ -31,5 +35,5 @@ public:
 
 private:
 	vec3d gravity = { 0, -9.81f, 0 };
-	double timeScale = 0.0001f;
+	double timeScale = 0.00075f;
 };

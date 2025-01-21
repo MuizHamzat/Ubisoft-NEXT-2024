@@ -30,6 +30,7 @@
     <ClCompile Include="src\Math\matrix.cpp" />
     <ClCompile Include="src\ECS\EntityManager.cpp" />
     <ClCompile Include="src\Systems\RenderSystem.cpp" />
+    <ClCompile Include="src\Math\quat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -81,6 +82,10 @@
     <ClInclude Include="src\Graphics\Color.h" />
     <ClInclude Include="src\Components\DynamicsComponent.h" />
     <ClInclude Include="src\Systems\DynamicsSystem.h" />
+    <ClInclude Include="src\Physics\Contact.h" />
+    <ClInclude Include="src\Physics\physics.h" />
+    <ClInclude Include="src\Components\RigidBodyComponent.h" />
+    <ClInclude Include="src\Math\quat.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="API">
@@ -107,5 +112,7 @@
     <None Include="TestData\axis.obj" />
     <None Include="TestData\golfBall.obj" />
     <None Include="TestData\golfBallLP.obj" />
+    <None Include="TestData\arrow.obj" />
+    <None Include="TestData\platform.obj" />
   </ItemGroup>
 </Project>

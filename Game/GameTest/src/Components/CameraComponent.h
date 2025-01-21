@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "src/ECS/Component.h"
 
 struct CameraComponent
 {
